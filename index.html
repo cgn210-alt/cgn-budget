@@ -14,6 +14,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 :root{
   --bg:#f6f7f9; --card:#fff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --soft:#f3f4f6;
   --accent:#ea580c; --accent-soft:#ffedd5;
@@ -31,31 +32,39 @@
   --bad:#f87171; --bad-soft:#3a1d1d; --warn:#fbbf24; --warn-soft:#3a2e12; --info:#cbd5e1; --info-soft:#2a3240;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "맑은 고딕","Malgun Gothic",system-ui,sans-serif}
-header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-header h1{font-size:18px;margin:0}
-header .sub{color:var(--muted);font-size:12px}
-nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-nav button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:6px;cursor:pointer;font:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 "Pretendard","맑은 고딕","Malgun Gothic",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:16px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header h1{font-size:19px;margin:0;letter-spacing:-.3px}
+header .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+nav{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;padding:8px 24px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;white-space:nowrap;flex:0 0 auto}
+nav button:hover{color:var(--ink)}
 nav button.on{background:var(--accent-soft);color:var(--accent);font-weight:700}
-main{max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+main{max-width:1280px;margin:0 auto;padding:20px 20px 60px}
 .grid{display:grid;gap:12px}
-.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.kpi .l{color:var(--muted);font-size:12px}
-.kpi .v{font-size:22px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
-.kpi .s{color:var(--muted);font-size:12px}
-h2{font-size:15px;margin:22px 0 10px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-select,input[type=text],input[type=search]{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
-.btn{font:inherit;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.kpi .l{color:var(--muted);font-size:12.5px}
+.kpi .v{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap}
+.kpi .s{color:var(--muted);font-size:12px;margin-top:2px}
+h2{font-size:15.5px;margin:28px 0 10px;letter-spacing:-.2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+select,input[type=text],input[type=search]{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+.btn{font:inherit;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--soft)}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
-.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
-.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
-.tbl th{background:var(--soft);font-weight:600;position:sticky;top:0}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+.tbl th{background:var(--soft);font-weight:600;color:var(--muted);font-size:12px;position:sticky;top:0;z-index:1;white-space:nowrap}
+.tbl tbody tr:hover td,.tbl tr:hover td{background:color-mix(in srgb,var(--soft) 60%,transparent)}
 .tbl td.n,.tbl th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td.nw{white-space:nowrap}
+.tbl td.desc{min-width:240px}
 .tbl tr.tot td{font-weight:700;background:var(--soft)}
-.scroll{overflow-x:auto;max-height:70vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c,var(--muted));flex:0 0 auto}
+.scroll{overflow-x:auto;max-height:70vh;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);-webkit-overflow-scrolling:touch}
 .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
 .t-수정필요{background:var(--bad-soft);color:var(--bad)}
 .t-확인필요{background:var(--warn-soft);color:var(--warn)}
@@ -78,8 +87,28 @@ select,input[type=text],input[type=search]{font:inherit;padding:6px 8px;border:1
 input.amt{width:120px;text-align:right;font-variant-numeric:tabular-nums}
 .muted{color:var(--muted)}
 .hidden{display:none}
-details summary{cursor:pointer;font-weight:700;padding:6px 0}
-@media (max-width:640px){ .scroll .tbl{min-width:760px} .scroll .tbl td:first-child,.scroll .tbl td:nth-child(2){white-space:nowrap} .grid .card .tbl{min-width:0} header,nav{padding-left:16px;padding-right:16px} .kpi .v{font-size:18px} .chart{gap:2px} .col .val{display:none} }
+/* 담당자별: 과목을 누르면 세부 항목이 펼쳐짐 */
+.oc-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.oc-head b{font-size:15px;white-space:nowrap} .oc-head span{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oc-sub{color:var(--muted);font-size:12px;margin:2px 0 10px}
+details.acc{border-top:1px solid var(--line)}
+details.acc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:9px 2px;font-size:13px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::before{content:"";width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:0 0 auto;margin-right:2px}
+details.acc[open]>summary::before{transform:rotate(45deg)}
+details.acc>summary .an{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details.acc>summary .cnt{color:var(--muted);font-size:11.5px;white-space:nowrap}
+details.acc>summary .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
+details.acc>summary:hover{color:var(--accent)}
+.it{background:var(--soft);border-radius:10px;padding:10px 12px;margin:0 0 8px}
+.it .d{white-space:pre-line;font-size:13px}
+.it .t{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.it .t b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.it .ms{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.it .ms span{font-size:11.5px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1px 7px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.it .meta{color:var(--muted);font-size:12px;margin-top:6px}
+.it .fs{margin-top:6px;display:flex;flex-direction:column;gap:3px;font-size:12px}
+@media (max-width:640px){ .scroll .tbl{min-width:720px} .grid .card .tbl{min-width:0} header{padding:14px 16px} nav{padding:8px 12px} main{padding:16px 12px 60px} .kpi .v{font-size:19px} .chart{gap:2px} .col .val{display:none} .card{padding:14px} }
 @media print{ nav,.row .btn{display:none} .scroll{max-height:none;overflow:visible} }
 
 .gate{max-width:420px;margin:12vh auto;padding:0 16px;text-align:center}
@@ -155,6 +184,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const sum = a => a.reduce((x,y)=>x+y,0);
 const byId = Object.fromEntries(ITEMS.map(o=>[o.id,o]));
 const $ = id => document.getElementById(id);
+// 표의 팀·담당자·과목 칸은 줄바꿈하지 않는다
+const teamTd = t => `<td class="nw"><span class="chip" style="--c:${TCOL[t]||'var(--muted)'}">${esc(t)}</span></td>`;
+const nwTd = s => `<td class="nw">${esc(s)}</td>`;
+const rowHead = o => teamTd(o.team) + nwTd(o.owner) + nwTd(o.acct);
+const FIND_BY_ID = {};
+FINDS.forEach(f => (f.ids||[]).forEach(i => (FIND_BY_ID[i] = FIND_BY_ID[i] || []).push(f)));
 
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
@@ -225,7 +260,7 @@ function renderDash(){
     <tr><th>팀</th><th class="n">항목 수</th><th class="n">연간 예산</th><th class="n">인건비 제외</th><th class="n">비중</th><th>구성</th><th class="n">수정/확인/참고</th></tr>
     ${TEAMS.map(t => { const tt = teamTotal(t), op = sum(ITEMS.filter(o=>o.team===t && !isPers(o)).map(o=>o.total));
       const c = l => FINDS.filter(f=>f.team===t && f.level===l).length;
-      return `<tr><td><i class="dot" style="background:${TCOL[t]}"></i>${t}</td><td class="n">${ITEMS.filter(o=>o.team===t).length}</td><td class="n">${W(tt)}</td><td class="n">${W(op)}</td><td class="n">${(tt/GRAND*100).toFixed(1)}%</td>
+      return `<tr>${teamTd(t)}<td class="n">${ITEMS.filter(o=>o.team===t).length}</td><td class="n">${W(tt)}</td><td class="n">${W(op)}</td><td class="n">${(tt/GRAND*100).toFixed(1)}%</td>
       <td><div class="bar"><i style="width:${tt/GRAND*100}%;background:${TCOL[t]}"></i></div></td><td class="n">${c("수정필요")} / ${c("확인필요")} / ${c("참고")}</td></tr>`; }).join("")}
     <tr class="tot"><td>합계</td><td class="n">${ITEMS.length}</td><td class="n">${W(GRAND)}</td><td class="n">${W(GRAND-PERS_T)}</td><td class="n">100%</td><td></td><td class="n">${lv("수정필요")} / ${lv("확인필요")} / ${lv("참고")}</td></tr>
   </table></div>
@@ -261,19 +296,33 @@ function renderReview(){
   $("rvTeam").onchange = $("rvLv").onchange = draw; draw();
 }
 
+// 개별 항목 세부내용 (담당자별 화면에서 과목을 펼치면 보임)
+function itemHTML(o){
+  const ms = o.months.map((v,i)=>v?`<span>${i+1}월 ${W(v)}</span>`:"").join("");
+  const fs = (FIND_BY_ID[o.id]||[]).map(f=>`<div><span class="tag t-${f.level}">${f.level}</span> ${esc(f.title)}</div>`).join("");
+  const meta = [o.kind ? o.kind : "기존/신규 미기재", o.note ? "비고: " + o.note : ""].filter(Boolean).map(esc).join(" · ");
+  return `<div class="it"><div class="t"><div class="d">${esc(o.desc_full || o.desc)}</div><b>${W(o.total)}원</b></div>
+    <div class="ms">${ms || '<span class="muted">편성 금액 없음</span>'}</div>
+    <div class="meta">${meta}</div>${fs ? `<div class="fs">${fs}</div>` : ""}</div>`;
+}
+
 // 담당자별
 function renderOwner(){
   let h = "";
   TEAMS.forEach(t => {
     const its = ITEMS.filter(o=>o.team===t);
     const owners = [...new Set(its.map(o=>o.owner))].sort((a,b)=>sum(its.filter(o=>o.owner===b).map(o=>o.total))-sum(its.filter(o=>o.owner===a).map(o=>o.total)));
-    h += `<h2><i class="dot" style="background:${TCOL[t]}"></i>${t} · ${W(teamTotal(t))}원</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">`;
+    h += `<h2><span class="chip" style="--c:${TCOL[t]}">${t}</span> <span class="muted" style="font-weight:400">· ${W(teamTotal(t))}원</span></h2><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));align-items:start">`;
     owners.forEach(ow => {
       const oi = its.filter(o=>o.owner===ow), ot = sum(oi.map(o=>o.total));
-      const acc = {}; oi.forEach(o => { acc[o.acct] = acc[o.acct] || [0,0]; acc[o.acct][0]+=o.total; acc[o.acct][1]++; });
-      h += `<div class="card"><div style="display:flex;justify-content:space-between;font-weight:700"><span>${esc(ow)}</span><span>${W(ot)}원</span></div>
-        <div class="muted" style="font-size:12px;margin-bottom:6px">${oi.length}개 항목 · 팀 내 ${(ot/teamTotal(t)*100).toFixed(1)}%</div>
-        <table class="tbl">${Object.entries(acc).sort((a,b)=>b[1][0]-a[1][0]).map(([k,v])=>`<tr><td>${esc(k)} <span class="muted">(${v[1]})</span></td><td class="n">${W(v[0])}</td></tr>`).join("")}</table></div>`;
+      const acc = {}; oi.forEach(o => (acc[o.acct] = acc[o.acct] || []).push(o));
+      h += `<div class="card"><div class="oc-head"><b>${esc(ow)}</b><span>${W(ot)}원</span></div>
+        <div class="oc-sub">${oi.length}개 항목 · 팀 내 ${(ot/teamTotal(t)*100).toFixed(1)}% · 과목을 누르면 세부 항목이 보입니다</div>
+        ${Object.entries(acc).sort((a,b)=>sum(b[1].map(o=>o.total))-sum(a[1].map(o=>o.total))).map(([k,list])=>{
+          const flag = list.some(o=>FIND_BY_ID[o.id]);
+          return `<details class="acc"><summary><span class="an" title="${esc(k)}">${esc(k)}</span>${flag?'<span class="tag t-확인필요">검토</span>':''}<span class="cnt">${list.length}건</span><span class="amt">${W(sum(list.map(o=>o.total)))}</span></summary>
+            ${list.map(itemHTML).join("")}</details>`; }).join("")}
+      </div>`;
     });
     h += `</div>`;
   });
@@ -292,13 +341,13 @@ function renderMonth(){
     const m = monthly(pred), tot = Array.from({length:12},(_,i)=>sum(TEAMS.map(t=>m[t][i])));
     const avg = sum(tot)/12;
     $("mTbl").innerHTML = `<table class="tbl"><tr><th>팀</th>${tot.map((_,i)=>`<th class="n">${i+1}월</th>`).join("")}<th class="n">연간</th></tr>
-      ${TEAMS.map(t=>`<tr><td>${t}</td>${m[t].map(v=>`<td class="n">${W(v)}</td>`).join("")}<td class="n">${W(sum(m[t]))}</td></tr>`).join("")}
+      ${TEAMS.map(t=>`<tr>${teamTd(t)}${m[t].map(v=>`<td class="n">${W(v)}</td>`).join("")}<td class="n">${W(sum(m[t]))}</td></tr>`).join("")}
       <tr class="tot"><td>합계</td>${tot.map(v=>`<td class="n" style="${v>avg*1.2?'color:var(--accent)':''}">${W(v)}</td>`).join("")}<td class="n">${W(sum(tot))}</td></tr>
       <tr><td class="muted">평균 대비</td>${tot.map(v=>`<td class="n muted">${(v/avg*100).toFixed(0)}%</td>`).join("")}<td></td></tr></table>`;
     const mi = +$("mSel").value;
     const top = ITEMS.filter(o=>pred(o) && o.months[mi]>0).sort((a,b)=>b.months[mi]-a.months[mi]).slice(0,15);
     $("mTop").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th><th class="n">${mi+1}월 금액</th></tr>
-      ${top.map(o=>`<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${esc(o.desc)}</td><td class="n">${W(o.months[mi])}</td></tr>`).join("")}</table>`;
+      ${top.map(o=>`<tr>${rowHead(o)}<td class="desc">${esc(o.desc)}</td><td class="n">${W(o.months[mi])}</td></tr>`).join("")}</table>`;
   };
   $("mPers").onchange = $("mSel").onchange = draw; draw();
 }
@@ -324,7 +373,7 @@ function renderList(){
     const ms = Array.from({length:12},(_,i)=>sum(cur.map(o=>o.months[i])));
     $("lCnt").textContent = `${cur.length}개 · ${W(sum(cur.map(o=>o.total)))}원`;
     $("lTbl").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th>${ms.map((_,i)=>`<th class="n">${i+1}월</th>`).join("")}<th class="n">연간</th><th>구분</th></tr>
-      ${cur.map(o=>`<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${flagged.has(o.id)?'<span class="tag t-확인필요" title="검토 의견 있음">검토</span> ':''}${esc(o.desc)}</td>${o.months.map(v=>`<td class="n">${v?W(v):'<span class="muted">-</span>'}</td>`).join("")}<td class="n"><b>${W(o.total)}</b></td><td>${o.kind||'<span class="muted">미기재</span>'}</td></tr>`).join("")}
+      ${cur.map(o=>`<tr>${rowHead(o)}<td class="desc">${flagged.has(o.id)?'<span class="tag t-확인필요" title="검토 의견 있음">검토</span> ':''}${esc(o.desc)}</td>${o.months.map(v=>`<td class="n">${v?W(v):'<span class="muted">-</span>'}</td>`).join("")}<td class="n"><b>${W(o.total)}</b></td><td>${o.kind||'<span class="muted">미기재</span>'}</td></tr>`).join("")}
       <tr class="tot"><td colspan="4">합계</td>${ms.map(v=>`<td class="n">${W(v)}</td>`).join("")}<td class="n">${W(sum(ms))}</td><td></td></tr></table>`;
   };
   ["lTeam","lOwner","lAcct","lKind"].forEach(i=>$(i).onchange=draw); $("lQ").oninput = draw;
@@ -355,7 +404,7 @@ function renderExec(){
     $("eSum").innerHTML = `<table class="tbl"><tr><th>팀</th><th class="n">연간 예산</th><th class="n">집행 누계</th><th class="n">잔액</th><th>집행률</th>${Array.from({length:12},(_,i)=>`<th class="n">${i+1}월 집행</th>`).join("")}</tr>
       ${[...TEAMS,"합계"].map(t=>{ const its = ITEMS.filter(o=>t==="합계"||o.team===t);
         const b = sum(its.map(o=>o.total)); const ms = Array.from({length:12},(_,i)=>sum(its.map(o=>ex(o.id,i)))); const e = sum(ms); const r = b? e/b*100 : 0;
-        return `<tr class="${t==='합계'?'tot':''}"><td>${t}</td><td class="n">${W(b)}</td><td class="n">${W(e)}</td><td class="n">${W(b-e)}</td>
+        return `<tr class="${t==='합계'?'tot':''}">${t==='합계'?'<td class="nw">합계</td>':teamTd(t)}<td class="n">${W(b)}</td><td class="n">${W(e)}</td><td class="n">${W(b-e)}</td>
         <td><div style="display:flex;gap:6px;align-items:center"><div class="bar" style="flex:1"><i class="${r>100?'over':''}" style="width:${Math.min(r,100)}%"></i></div><span class="muted" style="font-size:11.5px">${r.toFixed(1)}%</span></div></td>
         ${ms.map(v=>`<td class="n">${v?W(v):'-'}</td>`).join("")}</tr>`; }).join("")}</table>`;
   };
@@ -364,7 +413,7 @@ function renderExec(){
     const its = ITEMS.filter(o=>(!t||o.team===t)&&(all||o.months[m]>0));
     $("eTbl").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th><th class="n">${m+1}월 예산</th><th class="n">${m+1}월 집행</th><th class="n">차이</th><th class="n">연 누계 집행 / 연 예산</th></tr>
       ${its.map(o=>{ const e = ex(o.id,m), cum = sum(Array.from({length:12},(_,i)=>ex(o.id,i)));
-        return `<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${esc(o.desc)}</td><td class="n">${W(o.months[m])}</td>
+        return `<tr>${rowHead(o)}<td class="desc">${esc(o.desc)}</td><td class="n">${W(o.months[m])}</td>
         <td class="n"><input class="amt" data-id="${o.id}" inputmode="numeric" value="${e?W(e):''}"></td>
         <td class="n" style="${e>o.months[m]?'color:var(--bad)':''}">${e?W(e-o.months[m]):''}</td>
         <td class="n">${W(cum)} / ${W(o.total)}</td></tr>`; }).join("")}</table>`;
