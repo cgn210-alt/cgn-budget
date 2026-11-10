@@ -139,7 +139,19 @@ details.acc>summary:hover{color:var(--accent)}
 .gate h1{font-size:20px;margin:0 0 8px} .gate p{color:var(--muted)}
 .gate .btn{width:100%;padding:12px;margin-top:10px}
 .notice{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:10px;font-size:13px;margin:12px 0;text-align:left}
-#adminBar{background:var(--accent-soft);padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px}
+#adminBar{background:var(--accent-soft);border-bottom:1px solid var(--line);padding:10px 24px;display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+#adminBar.hidden{display:none}
+.ab-head{display:flex;align-items:center;gap:10px;min-width:0}
+.ab-badge{background:var(--accent);color:#fff;font-weight:700;font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.ab-stamp{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ab-btns{display:flex;gap:8px}
+.ab-btns .btn{font-size:13px;padding:7px 14px;text-align:center}
+@media (max-width:640px){
+  #adminBar{padding:10px 12px}
+  .ab-head{width:100%;justify-content:space-between}
+  .ab-btns{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .ab-btns .btn{width:100%;padding:9px 8px}
+}
 </style>
 </head>
 <body>
@@ -163,10 +175,11 @@ details.acc>summary:hover{color:var(--accent)}
 </div>
 <div id="appScreen" class="hidden">
   <div id="adminBar" class="hidden">
-    <b>관리자</b>
-    <label class="btn">자료 올리기 (budget.json)<input type="file" accept=".json" class="hidden" onchange="uploadData(this)"></label>
-    <button class="btn" onclick="manageAllowed()">열람 계정 관리</button>
-    <span class="muted" id="dataStamp"></span>
+    <div class="ab-head"><span class="ab-badge">관리자</span><span class="ab-stamp" id="dataStamp"></span></div>
+    <div class="ab-btns">
+      <label class="btn" title="결과 폴더의 budget.json을 선택">자료 올리기<input type="file" accept=".json" class="hidden" onchange="uploadData(this)"></label>
+      <button class="btn" onclick="manageAllowed()">열람 계정 관리</button>
+    </div>
   </div>
   
 <header>
@@ -742,7 +755,7 @@ function manageAllowed() {
       el("whoami").textContent = u.email;
       el("adminBar").classList.toggle("hidden", !isMaster);
       if (!data) { if (isMaster) screen("emptyScreen"); else { el("deniedEmail").textContent = u.email; screen("deniedScreen"); } return; }
-      if (data.uploadedAt) el("dataStamp").textContent = "자료 올린 시각: " + new Date(data.uploadedAt).toLocaleString("ko-KR");
+      if (data.uploadedAt) el("dataStamp").textContent = "자료 갱신 " + new Date(data.uploadedAt).toLocaleString("ko-KR", { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
       start(data, r[1].val());
     }).catch(function () { el("deniedEmail").textContent = u.email; screen("deniedScreen"); });
   });
