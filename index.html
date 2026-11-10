@@ -132,7 +132,9 @@ details.acc>summary:hover{color:var(--accent)}
 .g-hist li{margin:2px 0}
 .banner{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:12px}
 @media print{ header,nav,.g-top .btn,.no-print{display:none!important} .g-tbl td{font-size:11px} }
-@media (max-width:640px){ .scroll .tbl{min-width:720px} .grid .card .tbl{min-width:0} header{padding:14px 16px} nav{padding:8px 12px} main{padding:16px 12px 60px} .kpi .v{font-size:19px} .chart{gap:2px} .col .val{display:none} .card{padding:14px} }
+@media (max-width:640px){ .scroll .tbl{min-width:720px} .grid .card .tbl{min-width:0} header{padding:14px 16px}
+  nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 10px;overflow:visible}
+  nav button{padding:8px 2px;font-size:13px;border-radius:10px;text-align:center;letter-spacing:-.3px} main{padding:16px 12px 60px} .kpi .v{font-size:19px} .chart{gap:2px} .col .val{display:none} .card{padding:14px} }
 @media print{ nav,.row .btn{display:none} .scroll{max-height:none;overflow:visible} }
 
 .gate{max-width:420px;margin:12vh auto;padding:0 16px;text-align:center}
@@ -146,6 +148,34 @@ details.acc>summary:hover{color:var(--accent)}
 .ab-stamp{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ab-btns{display:flex;gap:8px}
 .ab-btns .btn{font-size:13px;padding:7px 14px;text-align:center}
+/* 열람 계정 관리 창 */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal.hidden{display:none}
+.sheet{background:var(--card);color:var(--ink);width:100%;max-width:440px;border-radius:16px;padding:18px 18px 20px;box-shadow:0 10px 30px rgba(0,0,0,.2);max-height:85vh;overflow:auto}
+.sh-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sh-head b{font-size:16.5px}
+.sh-x{border:0;background:var(--soft);color:var(--muted);width:32px;height:32px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer}
+.sh-desc{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.acct-list{list-style:none;margin:0 0 14px;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.acct-list li{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line);font-size:13.5px}
+.acct-list li:first-child{border-top:0}
+.acct-list .em{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-list .role{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.acct-list .del{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:8px;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.acct-list .del.arm{background:var(--bad);border-color:var(--bad);color:#fff}
+.acct-list .empty{color:var(--muted);justify-content:center}
+.acct-form label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.acct-form .in{display:flex;gap:8px}
+.acct-form input{flex:1;min-width:0;font:inherit;font-size:15px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.acct-form input:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.acct-form .btn{padding:11px 18px;font-size:14px}
+.acct-msg{min-height:18px;font-size:12.5px;margin-top:8px}
+.acct-msg.err{color:var(--bad)} .acct-msg.ok{color:var(--ops)}
+@media (max-width:640px){
+  .modal{align-items:flex-end;padding:0}
+  .sheet{max-width:none;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+  .sheet::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+}
 @media (max-width:640px){
   #adminBar{padding:10px 12px}
   .ab-head{width:100%;justify-content:space-between}
@@ -206,6 +236,18 @@ details.acc>summary:hover{color:var(--accent)}
 </main>
 
   <div style="text-align:center;padding:0 0 30px"><span class="muted" id="whoami"></span> <button class="btn" onclick="firebase.auth().signOut()">로그아웃</button></div>
+</div>
+<div id="acctModal" class="modal hidden" onclick="if (event.target === this) closeAcct()">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="acctTitle">
+    <div class="sh-head"><b id="acctTitle">열람 계정 관리</b><button class="sh-x" onclick="closeAcct()" aria-label="닫기">×</button></div>
+    <p class="sh-desc">등록한 구글 계정은 예산 자료와 지침을 볼 수 있습니다. 자료 올리기와 수정은 마스터만 할 수 있습니다.</p>
+    <ul class="acct-list" id="acctList"></ul>
+    <form class="acct-form" id="acctForm" onsubmit="addAcct(event)" novalidate>
+      <label for="acctEmail">계정 추가</label>
+      <div class="in"><input type="email" id="acctEmail" placeholder="example@gmail.com" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email"><button class="btn pri" type="submit">추가</button></div>
+      <div class="acct-msg" id="acctMsg"></div>
+    </form>
+  </div>
 </div>
 <script type="text/plain" id="appCode">
 // PC용 파일은 아래에 자료가 들어가고, 웹(로그인) 버전은 Firebase에서 받은 자료를 window.BUDGET_DATA로 넘긴다
@@ -730,17 +772,49 @@ function uploadData(input) {
   input.value = "";
 }
 
+// 열람 계정 관리 (마스터 전용) — budget/allowed/<이메일의 . 을 , 로 바꾼 키> = true
+function htmlEsc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function acctMsg(t, kind) { var m = el("acctMsg"); m.textContent = t || ""; m.className = "acct-msg" + (kind ? " " + kind : ""); }
+function drawAcct() {
+  return db.ref("budget/allowed").once("value").then(function (s) {
+    var list = Object.keys(s.val() || {}).map(function (k) { return k.split(",").join("."); }).sort();
+    var h = '<li><span class="em">' + htmlEsc(MASTER_EMAIL) + '</span><span class="role">마스터</span></li>';
+    h += list.length ? list.map(function (e) { return '<li><span class="em">' + htmlEsc(e) + '</span><button type="button" class="del" data-em="' + htmlEsc(e) + '">삭제</button></li>'; }).join("")
+                     : '<li class="empty">추가로 허용된 계정이 없습니다</li>';
+    el("acctList").innerHTML = h;
+    el("acctList").querySelectorAll(".del").forEach(function (b) {
+      b.onclick = function () {
+        if (!b.classList.contains("arm")) { b.classList.add("arm"); b.textContent = "삭제 확인"; setTimeout(function () { b.classList.remove("arm"); b.textContent = "삭제"; }, 3000); return; }
+        var em = b.getAttribute("data-em");
+        db.ref("budget/allowed/" + emailKey(em)).set(null).then(function () { acctMsg(em + " 계정을 삭제했습니다.", "ok"); drawAcct(); })
+          .catch(function (e) { acctMsg("삭제하지 못했습니다: " + e.message, "err"); });
+      };
+    });
+  }).catch(function (e) { acctMsg("목록을 불러오지 못했습니다: " + e.message, "err"); });
+}
 function manageAllowed() {
-  db.ref("budget/allowed").once("value").then(function (s) {
-    var list = Object.keys(s.val() || {}).map(function (k) { return k.split(",").join("."); });
-    var cur = list.length ? "현재 허용 계정:\n" + list.join("\n") : "추가로 허용된 계정이 없습니다(마스터만 열람).";
-    var v = prompt(cur + "\n\n추가할 이메일을 입력하세요. 삭제하려면 앞에 - 를 붙이세요(예: -abc@gmail.com).");
-    if (!v) return;
-    v = v.trim();
-    var del = v.charAt(0) === "-"; if (del) v = v.slice(1).trim();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { alert("이메일 형식을 확인해 주세요."); return; }
-    return db.ref("budget/allowed/" + emailKey(v)).set(del ? null : true).then(function () { alert((del ? "삭제했습니다: " : "허용했습니다: ") + v); });
-  }).catch(function (e) { alert(e.message); });
+  acctMsg(""); el("acctEmail").value = "";
+  el("acctModal").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  history.pushState({ modal: "acct", tab: (history.state && history.state.tab) || location.hash.slice(1) }, "", location.hash);
+  drawAcct();
+}
+function closeAcct(fromPop) {
+  if (el("acctModal").classList.contains("hidden")) return;
+  el("acctModal").classList.add("hidden");
+  document.body.style.overflow = "";
+  if (!fromPop && history.state && history.state.modal === "acct") history.back();
+}
+window.addEventListener("popstate", function () { closeAcct(true); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAcct(); });
+function addAcct(ev) {
+  ev.preventDefault();
+  var v = el("acctEmail").value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { acctMsg("이메일 형식을 확인해 주세요. (예: name@gmail.com)", "err"); el("acctEmail").focus(); return; }
+  if (v === lc(MASTER_EMAIL)) { acctMsg("마스터 계정은 항상 허용되어 있습니다.", "err"); return; }
+  db.ref("budget/allowed/" + emailKey(v)).set(true).then(function () {
+    el("acctEmail").value = ""; acctMsg(v + " 계정을 추가했습니다.", "ok"); drawAcct();
+  }).catch(function (e) { acctMsg("추가하지 못했습니다: " + e.message, "err"); });
 }
 
 (function () {
