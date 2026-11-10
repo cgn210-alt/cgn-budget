@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>2027 경영관리실 예산 총괄</title>
+<meta name="description" content="예산 검토 결과 · 담당자별 · 월별 분석 · 집행 관리 (허용 계정 전용)">
+<meta property="og:title" content="2027 경영관리실 예산 총괄">
+<meta property="og:description" content="예산 검토 결과 · 담당자별 · 월별 분석 · 집행 관리 (허용 계정 전용)">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://cgn210-alt.github.io/cgn-budget/og.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --soft:#f3f4f6;
+  --accent:#ea580c; --accent-soft:#ffedd5;
+  --it:#2563eb; --ops:#0d9488; --hr:#9333ea;
+  --bad:#dc2626; --bad-soft:#fee2e2; --warn:#b45309; --warn-soft:#fef3c7; --info:#475569; --info-soft:#e2e8f0;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111418; --card:#1a1f25; --ink:#e5e7eb; --muted:#9ca3af; --line:#2d333b; --soft:#222830;
+  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc;
+  --bad:#f87171; --bad-soft:#3a1d1d; --warn:#fbbf24; --warn-soft:#3a2e12; --info:#cbd5e1; --info-soft:#2a3240;
+}}
+:root[data-theme="dark"]{
+  --bg:#111418; --card:#1a1f25; --ink:#e5e7eb; --muted:#9ca3af; --line:#2d333b; --soft:#222830;
+  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc;
+  --bad:#f87171; --bad-soft:#3a1d1d; --warn:#fbbf24; --warn-soft:#3a2e12; --info:#cbd5e1; --info-soft:#2a3240;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "맑은 고딕","Malgun Gothic",system-ui,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header h1{font-size:18px;margin:0}
+header .sub{color:var(--muted);font-size:12px}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:6px;cursor:pointer;font:inherit}
+nav button.on{background:var(--accent-soft);color:var(--accent);font-weight:700}
+main{max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi .l{color:var(--muted);font-size:12px}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .s{color:var(--muted);font-size:12px}
+h2{font-size:15px;margin:22px 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+select,input[type=text],input[type=search]{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.btn{font:inherit;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tbl th{background:var(--soft);font-weight:600;position:sticky;top:0}
+.tbl td.n,.tbl th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl tr.tot td{font-weight:700;background:var(--soft)}
+.scroll{overflow-x:auto;max-height:70vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.t-수정필요{background:var(--bad-soft);color:var(--bad)}
+.t-확인필요{background:var(--warn-soft);color:var(--warn)}
+.t-참고{background:var(--info-soft);color:var(--info)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.chart{display:flex;align-items:flex-end;gap:6px;height:220px;padding:8px 0 0}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;position:relative;min-width:0}
+.col .seg{width:100%}
+.col .lbl{text-align:center;font-size:11px;color:var(--muted);margin-top:4px}
+.col .val{text-align:center;font-size:10.5px;color:var(--ink);margin-bottom:2px;font-variant-numeric:tabular-nums}
+.col .seg:first-of-type{border-radius:3px 3px 0 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.find{border-left:3px solid var(--line);padding:10px 12px;margin-bottom:8px;background:var(--card);border-radius:0 8px 8px 0;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.find.l-수정필요{border-left-color:var(--bad)} .find.l-확인필요{border-left-color:var(--warn)} .find.l-참고{border-left-color:var(--info)}
+.find .h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700}
+.find .m{color:var(--muted);font-size:12px;margin-top:4px}
+.bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.over{background:var(--bad)}
+input.amt{width:120px;text-align:right;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.hidden{display:none}
+details summary{cursor:pointer;font-weight:700;padding:6px 0}
+@media (max-width:640px){ .scroll .tbl{min-width:760px} .scroll .tbl td:first-child,.scroll .tbl td:nth-child(2){white-space:nowrap} .grid .card .tbl{min-width:0} header,nav{padding-left:16px;padding-right:16px} .kpi .v{font-size:18px} .chart{gap:2px} .col .val{display:none} }
+@media print{ nav,.row .btn{display:none} .scroll{max-height:none;overflow:visible} }
+
+.gate{max-width:420px;margin:12vh auto;padding:0 16px;text-align:center}
+.gate h1{font-size:20px;margin:0 0 8px} .gate p{color:var(--muted)}
+.gate .btn{width:100%;padding:12px;margin-top:10px}
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:10px;font-size:13px;margin:12px 0;text-align:left}
+#adminBar{background:var(--accent-soft);padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px}
+</style>
+</head>
+<body>
+<div id="setupScreen" class="gate hidden"><h1>설정이 필요합니다</h1><p>firebase-config.js에 Firebase 설정값을 넣어야 합니다. README.md를 참고하세요.</p></div>
+<div id="loginScreen" class="gate hidden">
+  <h1>2027 경영관리실 예산 총괄</h1>
+  <p>허용된 구글 계정으로 로그인한 분만 볼 수 있습니다.</p>
+  <div id="inappNotice" class="notice hidden">카카오톡 등 앱 안의 브라우저에서는 구글 로그인이 되지 않습니다.<br>오른쪽 위(또는 아래) 메뉴에서 <b>다른 브라우저로 열기</b>(크롬, 사파리)를 눌러 주세요.</div>
+  <button class="btn pri" onclick="signIn()">구글 계정으로 로그인</button>
+</div>
+<div id="deniedScreen" class="gate hidden">
+  <h1>접근 권한이 없습니다</h1>
+  <p><b id="deniedEmail"></b><br>이 계정은 허용되지 않았습니다. 관리자에게 등록을 요청해 주세요.</p>
+  <button class="btn" onclick="firebase.auth().signOut()">다른 계정으로 로그인</button>
+</div>
+<div id="emptyScreen" class="gate hidden">
+  <h1>아직 올린 자료가 없습니다</h1>
+  <p>마스터 계정으로 로그인한 PC에서 결과 폴더의 budget.json을 올려 주세요.</p>
+  <label class="btn pri">자료 올리기 (budget.json)<input type="file" accept=".json" class="hidden" onchange="uploadData(this)"></label>
+  <button class="btn" onclick="firebase.auth().signOut()">로그아웃</button>
+</div>
+<div id="appScreen" class="hidden">
+  <div id="adminBar" class="hidden">
+    <b>관리자</b>
+    <label class="btn">자료 올리기 (budget.json)<input type="file" accept=".json" class="hidden" onchange="uploadData(this)"></label>
+    <button class="btn" onclick="manageAllowed()">열람 계정 관리</button>
+    <span class="muted" id="dataStamp"></span>
+  </div>
+  
+<header>
+  <div><h1>2027 경영관리실 예산 총괄</h1><div class="sub">2027년 예산사용 지침(2026.10) 기준 검토 · IT솔루션팀 / 운영관리팀 / 인사팀</div></div>
+  <div class="row" style="margin:0"><button class="btn" id="themeBtn">화면 밝기 전환</button></div>
+</header>
+<nav id="nav">
+  <button data-tab="dash" class="on">총괄 현황</button>
+  <button data-tab="review">검토 결과</button>
+  <button data-tab="owner">담당자별</button>
+  <button data-tab="month">월별 분석</button>
+  <button data-tab="list">전체 명세</button>
+  <button data-tab="exec">집행 관리</button>
+</nav>
+<main>
+  <section id="tab-dash"></section>
+  <section id="tab-review" class="hidden"></section>
+  <section id="tab-owner" class="hidden"></section>
+  <section id="tab-month" class="hidden"></section>
+  <section id="tab-list" class="hidden"></section>
+  <section id="tab-exec" class="hidden"></section>
+</main>
+
+  <div style="text-align:center;padding:0 0 30px"><span class="muted" id="whoami"></span> <button class="btn" onclick="firebase.auth().signOut()">로그아웃</button></div>
+</div>
+<script type="text/plain" id="appCode">
+// PC용 파일은 아래에 자료가 들어가고, 웹(로그인) 버전은 Firebase에서 받은 자료를 window.BUDGET_DATA로 넘긴다
+const DATA = window.BUDGET_DATA || null;
+// 웹 버전은 window.EXEC_STORE = { data, set(key, value), replace(obj) } 로 집행액을 Firebase에 저장한다
+const SHARED = !!window.EXEC_STORE;
+const ITEMS = DATA.items, FINDS = DATA.findings;
+const TEAMS = ["IT솔루션팀","운영관리팀","인사팀"];
+const TCOL = {"IT솔루션팀":"var(--it)","운영관리팀":"var(--ops)","인사팀":"var(--hr)"};
+const PERS = ["직원급여","국민연금","건강보험","고용보험","산재보험","퇴직급여"];
+const isPers = o => PERS.some(k => o.acct.includes(k));
+const W = n => Math.round(n).toLocaleString("ko-KR");
+const EOK = n => n >= 1e8 ? (n/1e8).toFixed(2).replace(/\.?0+$/,"") + "억" : n >= 1e4 ? W(n/1e4) + "만" : W(n);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sum = a => a.reduce((x,y)=>x+y,0);
+const byId = Object.fromEntries(ITEMS.map(o=>[o.id,o]));
+const $ = id => document.getElementById(id);
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+let EXEC = SHARED ? (window.EXEC_STORE.data || {}) : store.get("budget2027.exec", {});   // { "id-월": 금액 }
+function saveExec(k, v){
+  if (v) EXEC[k] = v; else delete EXEC[k];
+  if (SHARED) window.EXEC_STORE.set(k, v || null); else store.set("budget2027.exec", EXEC);
+}
+function replaceExec(obj){
+  EXEC = obj || {};
+  if (SHARED) window.EXEC_STORE.replace(EXEC); else store.set("budget2027.exec", EXEC);
+}
+
+// 테마
+(function(){
+  const t = store.get("budget2027.theme", null);
+  if (t) document.documentElement.dataset.theme = t;
+  $("themeBtn").onclick = () => {
+    const cur = document.documentElement.dataset.theme ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const nx = cur === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nx; store.set("budget2027.theme", nx);
+  };
+})();
+
+// 탭
+$("nav").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("main > section").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + b.dataset.tab));
+  store.set("budget2027.tab", b.dataset.tab);
+};
+
+const teamTotal = t => sum(ITEMS.filter(o=>o.team===t).map(o=>o.total));
+const GRAND = sum(ITEMS.map(o=>o.total));
+const PERS_T = sum(ITEMS.filter(isPers).map(o=>o.total));
+
+function monthly(pred){
+  const r = {}; TEAMS.forEach(t => r[t] = Array(12).fill(0));
+  ITEMS.filter(pred).forEach(o => o.months.forEach((v,i) => r[o.team][i] += v));
+  return r;
+}
+function chart(pred){
+  const m = monthly(pred);
+  const tot = Array.from({length:12}, (_,i) => sum(TEAMS.map(t=>m[t][i])));
+  const mx = Math.max(...tot);
+  return `<div class="chart">` + tot.map((v,i) => `<div class="col" title="${i+1}월 ${W(v)}원">
+      <div class="val">${EOK(v)}</div>
+      ${TEAMS.slice().reverse().map(t => `<div class="seg" style="height:${m[t][i]/mx*180}px;background:${TCOL[t]}" title="${t} ${i+1}월 ${W(m[t][i])}원"></div>`).join("")}
+      <div class="lbl">${i+1}월</div></div>`).join("") + `</div>
+    <div class="legend">${TEAMS.map(t=>`<span><i class="dot" style="background:${TCOL[t]}"></i>${t}</span>`).join("")}</div>`;
+}
+
+// 총괄 현황
+function renderDash(){
+  const lv = l => FINDS.filter(f=>f.level===l).length;
+  $("tab-dash").innerHTML = `
+  <div class="grid kpis">
+    <div class="card kpi"><div class="l">경영관리실 예산 총액</div><div class="v">${W(GRAND)}원</div><div class="s">${ITEMS.length}개 항목 · 월평균 ${W(GRAND/12)}원</div></div>
+    <div class="card kpi"><div class="l">인건비 (급여·4대보험·퇴직급여)</div><div class="v">${W(PERS_T)}원</div><div class="s">총액의 ${(PERS_T/GRAND*100).toFixed(1)}%</div></div>
+    <div class="card kpi"><div class="l">운영 예산 (인건비 제외)</div><div class="v">${W(GRAND-PERS_T)}원</div><div class="s">월평균 ${W((GRAND-PERS_T)/12)}원</div></div>
+    <div class="card kpi"><div class="l">검토 결과</div><div class="v"><span style="color:var(--bad)">${lv("수정필요")}</span> · <span style="color:var(--warn)">${lv("확인필요")}</span> · <span class="muted">${lv("참고")}</span></div><div class="s">수정필요 · 확인필요 · 참고</div></div>
+  </div>
+  <h2>팀별 예산</h2>
+  <div class="scroll" style="max-height:none"><table class="tbl">
+    <tr><th>팀</th><th class="n">항목 수</th><th class="n">연간 예산</th><th class="n">인건비 제외</th><th class="n">비중</th><th>구성</th><th class="n">수정/확인/참고</th></tr>
+    ${TEAMS.map(t => { const tt = teamTotal(t), op = sum(ITEMS.filter(o=>o.team===t && !isPers(o)).map(o=>o.total));
+      const c = l => FINDS.filter(f=>f.team===t && f.level===l).length;
+      return `<tr><td><i class="dot" style="background:${TCOL[t]}"></i>${t}</td><td class="n">${ITEMS.filter(o=>o.team===t).length}</td><td class="n">${W(tt)}</td><td class="n">${W(op)}</td><td class="n">${(tt/GRAND*100).toFixed(1)}%</td>
+      <td><div class="bar"><i style="width:${tt/GRAND*100}%;background:${TCOL[t]}"></i></div></td><td class="n">${c("수정필요")} / ${c("확인필요")} / ${c("참고")}</td></tr>`; }).join("")}
+    <tr class="tot"><td>합계</td><td class="n">${ITEMS.length}</td><td class="n">${W(GRAND)}</td><td class="n">${W(GRAND-PERS_T)}</td><td class="n">100%</td><td></td><td class="n">${lv("수정필요")} / ${lv("확인필요")} / ${lv("참고")}</td></tr>
+  </table></div>
+  <h2>월별 운영 예산 (인건비 제외)</h2>
+  <div class="card">${chart(o=>!isPers(o))}</div>
+  <h2>먼저 처리할 수정필요 사항</h2>
+  ${FINDS.filter(f=>f.level==="수정필요").map(findHTML).join("")}`;
+}
+
+function findHTML(f){
+  const ids = f.ids || [];
+  const owners = [...new Set(ids.map(i=>byId[i].owner))].join(", ");
+  const amt = sum(ids.map(i=>byId[i].total));
+  return `<div class="find l-${f.level}"><div class="h"><span class="tag t-${f.level}">${f.level}</span><span>${esc(f.team)}</span><span>${esc(f.title)}</span></div>
+    <div style="margin-top:4px">${esc(f.detail)}</div>
+    <div class="m">근거: ${esc(f.basis)}${ids.length ? ` · 담당자: ${esc(owners)} · 관련 금액 ${W(amt)}원` : ""}</div></div>`;
+}
+
+// 검토 결과
+function renderReview(){
+  const el = $("tab-review");
+  el.innerHTML = `<div class="row">
+    <select id="rvTeam"><option value="">전체 팀</option>${TEAMS.map(t=>`<option>${t}</option>`).join("")}</select>
+    <select id="rvLv"><option value="">전체 수준</option><option>수정필요</option><option>확인필요</option><option>참고</option></select>
+    <span class="muted" id="rvCnt"></span></div><div id="rvList"></div>
+    <h2>지침에 맞게 작성된 사항</h2><div class="card"><ul style="margin:0;padding-left:18px">${DATA.ok.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>`;
+  const draw = () => {
+    const t = $("rvTeam").value, l = $("rvLv").value, ord = {"수정필요":0,"확인필요":1,"참고":2};
+    const fs = FINDS.filter(f => (!t||f.team===t) && (!l||f.level===l)).sort((a,b)=>ord[a.level]-ord[b.level]);
+    $("rvCnt").textContent = fs.length + "건";
+    $("rvList").innerHTML = fs.map(findHTML).join("");
+  };
+  $("rvTeam").onchange = $("rvLv").onchange = draw; draw();
+}
+
+// 담당자별
+function renderOwner(){
+  let h = "";
+  TEAMS.forEach(t => {
+    const its = ITEMS.filter(o=>o.team===t);
+    const owners = [...new Set(its.map(o=>o.owner))].sort((a,b)=>sum(its.filter(o=>o.owner===b).map(o=>o.total))-sum(its.filter(o=>o.owner===a).map(o=>o.total)));
+    h += `<h2><i class="dot" style="background:${TCOL[t]}"></i>${t} · ${W(teamTotal(t))}원</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">`;
+    owners.forEach(ow => {
+      const oi = its.filter(o=>o.owner===ow), ot = sum(oi.map(o=>o.total));
+      const acc = {}; oi.forEach(o => { acc[o.acct] = acc[o.acct] || [0,0]; acc[o.acct][0]+=o.total; acc[o.acct][1]++; });
+      h += `<div class="card"><div style="display:flex;justify-content:space-between;font-weight:700"><span>${esc(ow)}</span><span>${W(ot)}원</span></div>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">${oi.length}개 항목 · 팀 내 ${(ot/teamTotal(t)*100).toFixed(1)}%</div>
+        <table class="tbl">${Object.entries(acc).sort((a,b)=>b[1][0]-a[1][0]).map(([k,v])=>`<tr><td>${esc(k)} <span class="muted">(${v[1]})</span></td><td class="n">${W(v[0])}</td></tr>`).join("")}</table></div>`;
+    });
+    h += `</div>`;
+  });
+  $("tab-owner").innerHTML = h;
+}
+
+// 월별 분석
+function renderMonth(){
+  const el = $("tab-month");
+  el.innerHTML = `<div class="row"><label><input type="checkbox" id="mPers"> 인건비 포함</label></div>
+    <div class="card" id="mChart"></div><h2>팀별 월 예산</h2><div class="scroll" id="mTbl" style="max-height:none"></div>
+    <h2>월별 주요 항목</h2><div class="row"><select id="mSel">${Array.from({length:12},(_,i)=>`<option value="${i}">${i+1}월</option>`).join("")}</select><span class="muted">선택한 달의 금액이 큰 순서 (상위 15개)</span></div><div class="scroll" id="mTop"></div>`;
+  const draw = () => {
+    const inc = $("mPers").checked, pred = o => inc || !isPers(o);
+    $("mChart").innerHTML = chart(pred);
+    const m = monthly(pred), tot = Array.from({length:12},(_,i)=>sum(TEAMS.map(t=>m[t][i])));
+    const avg = sum(tot)/12;
+    $("mTbl").innerHTML = `<table class="tbl"><tr><th>팀</th>${tot.map((_,i)=>`<th class="n">${i+1}월</th>`).join("")}<th class="n">연간</th></tr>
+      ${TEAMS.map(t=>`<tr><td>${t}</td>${m[t].map(v=>`<td class="n">${W(v)}</td>`).join("")}<td class="n">${W(sum(m[t]))}</td></tr>`).join("")}
+      <tr class="tot"><td>합계</td>${tot.map(v=>`<td class="n" style="${v>avg*1.2?'color:var(--accent)':''}">${W(v)}</td>`).join("")}<td class="n">${W(sum(tot))}</td></tr>
+      <tr><td class="muted">평균 대비</td>${tot.map(v=>`<td class="n muted">${(v/avg*100).toFixed(0)}%</td>`).join("")}<td></td></tr></table>`;
+    const mi = +$("mSel").value;
+    const top = ITEMS.filter(o=>pred(o) && o.months[mi]>0).sort((a,b)=>b.months[mi]-a.months[mi]).slice(0,15);
+    $("mTop").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th><th class="n">${mi+1}월 금액</th></tr>
+      ${top.map(o=>`<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${esc(o.desc)}</td><td class="n">${W(o.months[mi])}</td></tr>`).join("")}</table>`;
+  };
+  $("mPers").onchange = $("mSel").onchange = draw; draw();
+}
+
+// 전체 명세
+function renderList(){
+  const el = $("tab-list");
+  const owners = [...new Set(ITEMS.map(o=>o.owner))];
+  const accts = [...new Set(ITEMS.map(o=>o.acct))].sort();
+  el.innerHTML = `<div class="row">
+    <select id="lTeam"><option value="">전체 팀</option>${TEAMS.map(t=>`<option>${t}</option>`).join("")}</select>
+    <select id="lOwner"><option value="">전체 담당자</option>${owners.map(t=>`<option>${esc(t)}</option>`).join("")}</select>
+    <select id="lAcct"><option value="">전체 과목</option>${accts.map(t=>`<option>${esc(t)}</option>`).join("")}</select>
+    <select id="lKind"><option value="">기존/신규 전체</option><option>기존</option><option>신규</option><option value="-">미기재</option></select>
+    <input type="search" id="lQ" placeholder="내용 검색">
+    <button class="btn" id="lCsv">CSV 내려받기</button><span class="muted" id="lCnt"></span></div>
+    <div class="scroll" id="lTbl"></div>`;
+  const flagged = new Set(FINDS.flatMap(f=>f.ids||[]));
+  let cur = [];
+  const draw = () => {
+    const t=$("lTeam").value, ow=$("lOwner").value, ac=$("lAcct").value, k=$("lKind").value, q=$("lQ").value.trim();
+    cur = ITEMS.filter(o=>(!t||o.team===t)&&(!ow||o.owner===ow)&&(!ac||o.acct===ac)&&(!k||(k==="-"?!o.kind:o.kind===k))&&(!q||o.desc.includes(q)));
+    const ms = Array.from({length:12},(_,i)=>sum(cur.map(o=>o.months[i])));
+    $("lCnt").textContent = `${cur.length}개 · ${W(sum(cur.map(o=>o.total)))}원`;
+    $("lTbl").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th>${ms.map((_,i)=>`<th class="n">${i+1}월</th>`).join("")}<th class="n">연간</th><th>구분</th></tr>
+      ${cur.map(o=>`<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${flagged.has(o.id)?'<span class="tag t-확인필요" title="검토 의견 있음">검토</span> ':''}${esc(o.desc)}</td>${o.months.map(v=>`<td class="n">${v?W(v):'<span class="muted">-</span>'}</td>`).join("")}<td class="n"><b>${W(o.total)}</b></td><td>${o.kind||'<span class="muted">미기재</span>'}</td></tr>`).join("")}
+      <tr class="tot"><td colspan="4">합계</td>${ms.map(v=>`<td class="n">${W(v)}</td>`).join("")}<td class="n">${W(sum(ms))}</td><td></td></tr></table>`;
+  };
+  ["lTeam","lOwner","lAcct","lKind"].forEach(i=>$(i).onchange=draw); $("lQ").oninput = draw;
+  $("lCsv").onclick = () => {
+    const head = ["팀","담당자","예산과목","내용",...Array.from({length:12},(_,i)=>`${i+1}월`),"연간","기존/신규"];
+    const rows = cur.map(o=>[o.team,o.owner,o.acct,o.desc,...o.months,o.total,o.kind]);
+    const csv = "﻿" + [head,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download = "2027_경영관리실_예산명세.csv"; a.click();
+  };
+  draw();
+}
+
+// 집행 관리
+function renderExec(){
+  const el = $("tab-exec");
+  const now = new Date(); const defM = now.getFullYear() === 2027 ? now.getMonth() : 0;
+  el.innerHTML = `<div class="card muted" style="font-size:12.5px">월별 실제 집행액을 입력하면 예산 대비 집행률을 계산합니다. ${SHARED ? '입력값은 서버(Firebase)에 저장되어 로그인한 모든 PC·휴대폰에서 같은 값으로 보입니다. 보관용으로 가끔 "집행 자료 내보내기"를 해 두세요.' : '입력값은 이 브라우저에만 저장되므로, 다른 PC로 옮기거나 보관할 때는 "집행 자료 내보내기"로 파일을 저장해 두세요.'}</div>
+    <h2>팀별 누적 집행 현황</h2><div class="scroll" style="max-height:none" id="eSum"></div>
+    <h2>월별 집행액 입력</h2>
+    <div class="row"><select id="eM">${Array.from({length:12},(_,i)=>`<option value="${i}" ${i===defM?'selected':''}>${i+1}월</option>`).join("")}</select>
+      <select id="eT"><option value="">전체 팀</option>${TEAMS.map(t=>`<option>${t}</option>`).join("")}</select>
+      <label><input type="checkbox" id="eAll"> 예산 없는 항목도 보기</label>
+      <button class="btn" id="eExp">집행 자료 내보내기</button>
+      <label class="btn">집행 자료 불러오기<input type="file" id="eImp" accept=".json" class="hidden"></label></div>
+    <div class="scroll" id="eTbl"></div>`;
+  const ex = (id,m) => +(EXEC[id+"-"+m]||0);
+  const drawSum = () => {
+    $("eSum").innerHTML = `<table class="tbl"><tr><th>팀</th><th class="n">연간 예산</th><th class="n">집행 누계</th><th class="n">잔액</th><th>집행률</th>${Array.from({length:12},(_,i)=>`<th class="n">${i+1}월 집행</th>`).join("")}</tr>
+      ${[...TEAMS,"합계"].map(t=>{ const its = ITEMS.filter(o=>t==="합계"||o.team===t);
+        const b = sum(its.map(o=>o.total)); const ms = Array.from({length:12},(_,i)=>sum(its.map(o=>ex(o.id,i)))); const e = sum(ms); const r = b? e/b*100 : 0;
+        return `<tr class="${t==='합계'?'tot':''}"><td>${t}</td><td class="n">${W(b)}</td><td class="n">${W(e)}</td><td class="n">${W(b-e)}</td>
+        <td><div style="display:flex;gap:6px;align-items:center"><div class="bar" style="flex:1"><i class="${r>100?'over':''}" style="width:${Math.min(r,100)}%"></i></div><span class="muted" style="font-size:11.5px">${r.toFixed(1)}%</span></div></td>
+        ${ms.map(v=>`<td class="n">${v?W(v):'-'}</td>`).join("")}</tr>`; }).join("")}</table>`;
+  };
+  const drawTbl = () => {
+    const m = +$("eM").value, t = $("eT").value, all = $("eAll").checked;
+    const its = ITEMS.filter(o=>(!t||o.team===t)&&(all||o.months[m]>0));
+    $("eTbl").innerHTML = `<table class="tbl"><tr><th>팀</th><th>담당자</th><th>예산과목</th><th>내용</th><th class="n">${m+1}월 예산</th><th class="n">${m+1}월 집행</th><th class="n">차이</th><th class="n">연 누계 집행 / 연 예산</th></tr>
+      ${its.map(o=>{ const e = ex(o.id,m), cum = sum(Array.from({length:12},(_,i)=>ex(o.id,i)));
+        return `<tr><td>${o.team}</td><td>${esc(o.owner)}</td><td>${esc(o.acct)}</td><td>${esc(o.desc)}</td><td class="n">${W(o.months[m])}</td>
+        <td class="n"><input class="amt" data-id="${o.id}" inputmode="numeric" value="${e?W(e):''}"></td>
+        <td class="n" style="${e>o.months[m]?'color:var(--bad)':''}">${e?W(e-o.months[m]):''}</td>
+        <td class="n">${W(cum)} / ${W(o.total)}</td></tr>`; }).join("")}</table>`;
+    $("eTbl").querySelectorAll("input.amt").forEach(inp => inp.onchange = () => {
+      const v = +inp.value.replace(/[^0-9]/g,""); const k = inp.dataset.id+"-"+m;
+      saveExec(k, v); drawSum(); drawTbl();
+    });
+  };
+  $("eM").onchange = $("eT").onchange = $("eAll").onchange = drawTbl;
+  $("eExp").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ver:1,exec:EXEC},null,1)],{type:"application/json"})); a.download = "2027_예산집행자료.json"; a.click(); };
+  $("eImp").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const j = JSON.parse(t); if (j && j.exec) { if (SHARED && !confirm("서버에 저장된 집행액을 이 파일 내용으로 모두 바꿉니다. 계속할까요?")) return; replaceExec(j.exec); drawSum(); drawTbl(); alert("불러왔습니다."); } } catch(err) { alert("파일 형식을 확인해 주세요."); } }); };
+  drawSum(); drawTbl();
+}
+
+renderDash(); renderReview(); renderOwner(); renderMonth(); renderList(); renderExec();
+const lastTab = store.get("budget2027.tab", null);
+if (lastTab) { const b = document.querySelector(`#nav button[data-tab="${lastTab}"]`); if (b) b.click(); }
+</script>
+<script src="firebase-config.js?v=1"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+var YEAR = "2027", BASE = "budget/years/" + YEAR;
+var db, me, isMaster = false, started = false;
+function el(id) { return document.getElementById(id); }
+function screen(id) { ["setupScreen","loginScreen","deniedScreen","emptyScreen","appScreen"].forEach(function (s) { el(s).classList.toggle("hidden", s !== id); }); }
+function lc(s) { return String(s || "").toLowerCase(); }
+function emailKey(e) { return lc(e).split(".").join(","); }
+if (/KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent)) el("inappNotice").classList.remove("hidden");
+
+function signIn() {
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: "select_account" });
+  firebase.auth().signInWithPopup(p).catch(function (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") firebase.auth().signInWithRedirect(p);
+    else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") alert("로그인에 실패했습니다: " + e.message);
+  });
+}
+
+function start(data, exec) {
+  if (started) { location.reload(); return; }
+  started = true;
+  window.BUDGET_DATA = data;
+  window.EXEC_STORE = {
+    data: exec || {},
+    set: function (k, v) { return db.ref(BASE + "/exec/" + k).set(v).catch(function (e) { alert("저장하지 못했습니다: " + e.message); }); },
+    replace: function (o) { return db.ref(BASE + "/exec").set(o).catch(function (e) { alert("저장하지 못했습니다: " + e.message); }); }
+  };
+  screen("appScreen");
+  var s = document.createElement("script");
+  s.textContent = el("appCode").textContent;
+  document.body.appendChild(s);
+}
+
+function uploadData(input) {
+  var f = input.files[0]; if (!f) return;
+  f.text().then(function (t) {
+    var j = JSON.parse(t);
+    if (!j.items || !j.findings) throw new Error("budget.json 형식이 아닙니다.");
+    if (!confirm("항목 " + j.items.length + "개 자료를 서버에 올립니다. 이전 자료는 바뀝니다(집행액은 유지). 계속할까요?")) return;
+    j.uploadedAt = new Date().toISOString(); j.uploadedBy = me.email;
+    return db.ref(BASE + "/data").set(j).then(function () { alert("올렸습니다."); location.reload(); });
+  }).catch(function (e) { alert("올리지 못했습니다: " + e.message); });
+  input.value = "";
+}
+
+function manageAllowed() {
+  db.ref("budget/allowed").once("value").then(function (s) {
+    var list = Object.keys(s.val() || {}).map(function (k) { return k.split(",").join("."); });
+    var cur = list.length ? "현재 허용 계정:\n" + list.join("\n") : "추가로 허용된 계정이 없습니다(마스터만 열람).";
+    var v = prompt(cur + "\n\n추가할 이메일을 입력하세요. 삭제하려면 앞에 - 를 붙이세요(예: -abc@gmail.com).");
+    if (!v) return;
+    v = v.trim();
+    var del = v.charAt(0) === "-"; if (del) v = v.slice(1).trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { alert("이메일 형식을 확인해 주세요."); return; }
+    return db.ref("budget/allowed/" + emailKey(v)).set(del ? null : true).then(function () { alert((del ? "삭제했습니다: " : "허용했습니다: ") + v); });
+  }).catch(function (e) { alert(e.message); });
+}
+
+(function () {
+  if (typeof FIREBASE_CONFIG === "undefined" || !FIREBASE_CONFIG.apiKey) { screen("setupScreen"); return; }
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  firebase.auth().onAuthStateChanged(function (u) {
+    if (!u) { if (started) location.reload(); screen("loginScreen"); return; }
+    me = u; isMaster = lc(u.email) === lc(MASTER_EMAIL);
+    Promise.all([db.ref(BASE + "/data").once("value"), db.ref(BASE + "/exec").once("value")]).then(function (r) {
+      var data = r[0].val();
+      el("whoami").textContent = u.email;
+      el("adminBar").classList.toggle("hidden", !isMaster);
+      if (!data) { if (isMaster) screen("emptyScreen"); else { el("deniedEmail").textContent = u.email; screen("deniedScreen"); } return; }
+      if (data.uploadedAt) el("dataStamp").textContent = "자료 올린 시각: " + new Date(data.uploadedAt).toLocaleString("ko-KR");
+      start(data, r[1].val());
+    }).catch(function () { el("deniedEmail").textContent = u.email; screen("deniedScreen"); });
+  });
+})();
+</script>
+</body>
+</html>

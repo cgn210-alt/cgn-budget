@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "budget": {
+      "allowed": {
+        ".read": "auth != null && auth.token.email_verified == true && auth.token.email.toLowerCase() == 'cgn210@cgnmail.net'",
+        ".write": "auth != null && auth.token.email_verified == true && auth.token.email.toLowerCase() == 'cgn210@cgnmail.net'"
+      },
+      "years": {
+        "$year": {
+          ".read": "auth != null && auth.token.email_verified == true && (auth.token.email.toLowerCase() == 'cgn210@cgnmail.net' || root.child('budget/allowed').child(auth.token.email.toLowerCase().replace('.', ',')).exists())",
+          ".write": "auth != null && auth.token.email_verified == true && auth.token.email.toLowerCase() == 'cgn210@cgnmail.net'"
+        }
+      }
+    }
+  }
+}
