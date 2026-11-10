@@ -108,6 +108,30 @@ details.acc>summary:hover{color:var(--accent)}
 .it .ms span{font-size:11.5px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1px 7px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .it .meta{color:var(--muted);font-size:12px;margin-top:6px}
 .it .fs{margin-top:6px;display:flex;flex-direction:column;gap:3px;font-size:12px}
+/* 예산 지침 */
+.g-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.g-title{font-size:18px;font-weight:700;margin:0}
+.g-meta{color:var(--muted);font-size:12.5px}
+.g-intro{white-space:pre-line;background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px}
+.g-sec{margin-top:22px}
+.g-sec h3{font-size:15.5px;margin:0 0 6px}
+.g-note{white-space:pre-line;color:var(--accent);font-weight:600;font-size:13px;margin:0 0 8px}
+.g-text{white-space:pre-line;font-size:13px;margin:8px 2px 0}
+.g-tbl td{white-space:pre-line;font-size:13px;line-height:1.6}
+.g-tbl td.k{white-space:pre-line;font-weight:600;background:var(--soft);min-width:96px}
+.g-tbl td.k.grp{color:var(--muted);font-weight:700;text-align:center;vertical-align:middle;min-width:64px}
+.g-edit textarea,.g-edit input[type=text]{width:100%;font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);resize:vertical}
+.g-edit textarea{min-height:64px}
+.g-edit .g-sec{border:1px dashed var(--line);border-radius:12px;padding:12px;background:var(--card)}
+.g-edit .g-sec .row{margin:8px 0}
+.g-edit .g-sec label{font-size:12px;color:var(--muted);display:block;margin:6px 0 3px}
+.g-edit td{vertical-align:top;padding:4px}
+.btn.sm{padding:4px 9px;font-size:12px}
+.btn.red{color:var(--bad)}
+.g-hist{font-size:12.5px;color:var(--muted);margin-top:26px}
+.g-hist li{margin:2px 0}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:12px}
+@media print{ header,nav,.g-top .btn,.no-print{display:none!important} .g-tbl td{font-size:11px} }
 @media (max-width:640px){ .scroll .tbl{min-width:720px} .grid .card .tbl{min-width:0} header{padding:14px 16px} nav{padding:8px 12px} main{padding:16px 12px 60px} .kpi .v{font-size:19px} .chart{gap:2px} .col .val{display:none} .card{padding:14px} }
 @media print{ nav,.row .btn{display:none} .scroll{max-height:none;overflow:visible} }
 
@@ -156,6 +180,7 @@ details.acc>summary:hover{color:var(--accent)}
   <button data-tab="month">월별 분석</button>
   <button data-tab="list">전체 명세</button>
   <button data-tab="exec">집행 관리</button>
+  <button data-tab="guide">예산 지침</button>
 </nav>
 <main>
   <section id="tab-dash"></section>
@@ -164,6 +189,7 @@ details.acc>summary:hover{color:var(--accent)}
   <section id="tab-month" class="hidden"></section>
   <section id="tab-list" class="hidden"></section>
   <section id="tab-exec" class="hidden"></section>
+  <section id="tab-guide" class="hidden"></section>
 </main>
 
   <div style="text-align:center;padding:0 0 30px"><span class="muted" id="whoami"></span> <button class="btn" onclick="firebase.auth().signOut()">로그아웃</button></div>
@@ -217,13 +243,46 @@ function replaceExec(obj){
   };
 })();
 
-// 탭
+// 탭 — 탭을 옮길 때마다 방문 기록을 남겨, 뒤로 가기를 누르면 직전 탭(검색 조건·스크롤 그대로)으로 돌아감
+let curTab = "dash";
+const scrollPos = {};
+function showTab(tab, push){
+  if (!document.getElementById("tab-" + tab)) tab = "dash";
+  scrollPos[curTab] = window.scrollY;
+  curTab = tab;
+  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x.dataset.tab === tab));
+  document.querySelectorAll("main > section").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + tab));
+  store.set("budget2027.tab", tab);
+  if (push) history.pushState({ tab }, "", "#" + tab);
+  window.scrollTo(0, scrollPos[tab] || 0);
+}
 $("nav").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x === b));
-  document.querySelectorAll("main > section").forEach(s => s.classList.toggle("hidden", s.id !== "tab-" + b.dataset.tab));
-  store.set("budget2027.tab", b.dataset.tab);
+  const b = e.target.closest("button"); if (!b || b.dataset.tab === curTab) return;
+  showTab(b.dataset.tab, true);
 };
+window.addEventListener("popstate", e => showTab((e.state && e.state.tab) || location.hash.slice(1) || "dash", false));
+
+// 검색어·선택 조건은 이 창이 열려 있는 동안 기억해 두었다가 다시 열릴 때 되살림
+const UI_KEY = "budget2027.ui";
+function uiGet(){ try { return JSON.parse(sessionStorage.getItem(UI_KEY) || "{}"); } catch(e) { return {}; } }
+function uiSave(){
+  const s = {};
+  document.querySelectorAll("main select[id], main input[id]").forEach(el => {
+    if (el.type === "file") return;
+    s[el.id] = el.type === "checkbox" ? el.checked : el.value;
+  });
+  try { sessionStorage.setItem(UI_KEY, JSON.stringify(s)); } catch(e) {}
+}
+function uiRestore(){
+  const s = uiGet();
+  Object.entries(s).forEach(([id, v]) => {
+    const el = document.getElementById(id); if (!el) return;
+    if (el.type === "checkbox") el.checked = !!v; else el.value = v;
+    el.dispatchEvent(new Event(el.tagName === "INPUT" && el.type !== "checkbox" ? "input" : "change"));
+  });
+  document.querySelector("main").addEventListener("change", uiSave);
+  document.querySelector("main").addEventListener("input", uiSave);
+}
 
 const teamTotal = t => sum(ITEMS.filter(o=>o.team===t).map(o=>o.total));
 const GRAND = sum(ITEMS.map(o=>o.total));
@@ -428,9 +487,173 @@ function renderExec(){
   drawSum(); drawTbl();
 }
 
-renderDash(); renderReview(); renderOwner(); renderMonth(); renderList(); renderExec();
-const lastTab = store.get("budget2027.tab", null);
-if (lastTab) { const b = document.querySelector(`#nav button[data-tab="${lastTab}"]`); if (b) b.click(); }
+// 예산 지침 — 연도별로 보관하고 편집할 수 있음
+// 웹 버전: window.GUIDE_STORE = { canEdit, years() → Promise<[연도]>, load(연도) → Promise<지침|null>, save(연도, 지침) → Promise }
+// PC용 파일: 이 브라우저(localStorage)에 저장. 기본값은 자료에 들어 있는 지침(DATA.guide)
+const GSTORE = window.GUIDE_STORE || {
+  canEdit: true,
+  years(){ const ys = []; try { for (let i = 0; i < localStorage.length; i++) { const m = /^budget\.guide\.(\d{4})$/.exec(localStorage.key(i)); if (m) ys.push(m[1]); } } catch(e) {} return Promise.resolve(ys); },
+  load(y){ return Promise.resolve(store.get("budget.guide." + y, null)); },
+  save(y, g){ store.set("budget.guide." + y, g); return Promise.resolve(); }
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const G = { years: [], year: null, data: null, fromDefault: false, editing: false, draft: null };
+
+async function renderGuide(){
+  const ys = new Set(await GSTORE.years().catch(() => []));
+  if (DATA.guide) ys.add(String(DATA.guide.year));
+  G.years = [...ys].sort();
+  if (!G.year) G.year = DATA.guide ? String(DATA.guide.year) : G.years[G.years.length - 1];
+  await loadGuide(G.year);
+}
+async function loadGuide(y){
+  G.year = String(y); G.editing = false;
+  G.data = await GSTORE.load(G.year).catch(() => null);
+  G.fromDefault = false;
+  if (!G.data && DATA.guide && String(DATA.guide.year) === G.year) { G.data = clone(DATA.guide); G.fromDefault = true; }
+  drawGuide();
+}
+function guideTable(sec){
+  const cols = sec.cols || [], grp = cols[0] === "분류";
+  const rows = sec.rows || [];
+  let body = "";
+  rows.forEach((r, ri) => {
+    let tds = "";
+    cols.forEach((_, ci) => {
+      const v = r[ci] || "";
+      if (grp && ci === 0) {
+        if (ri > 0 && (rows[ri-1][0] || "") === v) return;   // 같은 분류는 칸을 합침
+        let span = 1; while (ri + span < rows.length && (rows[ri+span][0] || "") === v) span++;
+        tds += `<td class="k grp" rowspan="${span}">${esc(v)}</td>`;
+      } else if (ci === (grp ? 1 : 0)) tds += `<td class="k">${esc(v)}</td>`;
+      else tds += `<td>${esc(v)}</td>`;
+    });
+    body += `<tr>${tds}</tr>`;
+  });
+  return `<div class="scroll" style="max-height:none"><table class="tbl g-tbl"><tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>${body}</table></div>`;
+}
+function drawGuide(){
+  const el = $("tab-guide"), g = G.data, can = GSTORE.canEdit;
+  const yearSel = `<select id="gYear" title="연도">${G.years.map(y => `<option value="${y}" ${y === G.year ? "selected" : ""}>${y}년</option>`).join("")}</select>`;
+  if (!g) {
+    el.innerHTML = `<div class="g-top"><div class="row" style="margin:0">${yearSel}</div></div><div class="card muted">${G.year}년 지침이 아직 없습니다.</div>`;
+    $("gYear").onchange = e => loadGuide(e.target.value);
+    return;
+  }
+  if (G.editing) { drawGuideEdit(); return; }
+  const last = (g.history || [])[g.history.length - 1];
+  el.innerHTML = `
+    ${G.fromDefault && can && SHARED ? '<div class="banner no-print">서버에 저장된 지침이 없어 자료에 들어 있는 기본 지침(원문 PDF 기준)을 보여 줍니다. 편집해서 저장하면 서버에 보관됩니다.</div>' : ""}
+    <div class="g-top">
+      <div><p class="g-title">${esc(g.title || G.year + "년 예산사용 지침")}</p>
+        <div class="g-meta">${[g.issued ? "시행 " + esc(g.issued) : "", last ? `마지막 수정 ${esc(last.at)} ${esc(last.by || "")}` : ""].filter(Boolean).join(" · ")}</div></div>
+      <div class="row" style="margin:0">${yearSel}
+        <button class="btn" id="gPrint">인쇄</button>
+        ${can ? `<button class="btn pri" id="gEdit">편집</button><button class="btn" id="gNext">${+G.year + 1}년 지침 만들기</button>` : ""}
+        <button class="btn" id="gExp">파일로 내보내기</button>
+        ${can ? `<label class="btn">파일 불러오기<input type="file" id="gImp" accept=".json" class="hidden"></label>` : ""}
+      </div>
+    </div>
+    ${g.intro ? `<div class="g-intro">${esc(g.intro)}</div>` : ""}
+    ${(g.sections || []).map(s => `<div class="g-sec"><h3>${esc(s.title || "")}</h3>
+      ${s.note ? `<p class="g-note">${esc(s.note)}</p>` : ""}
+      ${(s.cols || []).length ? guideTable(s) : ""}
+      ${s.text ? `<div class="g-text">${esc(s.text)}</div>` : ""}</div>`).join("")}
+    ${(g.history || []).length ? `<div class="g-hist"><b>변경 이력</b><ul>${g.history.slice().reverse().map(h => `<li>${esc(h.at)} · ${esc(h.by || "")} · ${esc(h.memo || "")}</li>`).join("")}</ul></div>` : ""}`;
+  $("gYear").onchange = e => loadGuide(e.target.value);
+  $("gPrint").onclick = () => window.print();
+  $("gExp").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(g, null, 2)], {type: "application/json"})); a.download = `지침_${G.year}.json`; a.click(); };
+  if (!can) return;
+  $("gEdit").onclick = () => { G.editing = true; G.draft = clone(g); drawGuide(); };
+  $("gNext").onclick = async () => {
+    const ny = String(+G.year + 1);
+    if (G.years.includes(ny)) { if (!confirm(`${ny}년 지침이 이미 있습니다. 그 지침으로 이동할까요?`)) return; await loadGuide(ny); return; }
+    if (!confirm(`${G.year}년 지침을 복사해 ${ny}년 지침을 만듭니다. 만든 뒤 바로 편집 화면이 열립니다.`)) return;
+    const n = clone(g);
+    n.year = ny; n.title = (n.title || "").split(G.year).join(ny) || `${ny}년 예산사용 지침`; n.issued = ""; n.source = "";
+    n.history = [{ at: today(), by: who(), memo: `${G.year}년 지침을 복사해 만듦` }];
+    try { await GSTORE.save(ny, n); } catch(err) { alert("만들지 못했습니다: " + (err.message || err)); return; }
+    G.years = [...new Set([...G.years, ny])].sort();
+    G.year = ny; G.data = n; G.fromDefault = false;
+    G.editing = true; G.draft = clone(n); drawGuide();
+  };
+  $("gImp").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(async t => {
+    try { const j = JSON.parse(t); if (!j.sections) throw 0;
+      const y = String(j.year || G.year);
+      if (!confirm(`'${f.name}'의 내용으로 ${y}년 지침을 바꿉니다. 계속할까요?`)) return;
+      (j.history = j.history || []).push({ at: today(), by: who(), memo: `파일 불러오기: ${f.name}` });
+      await GSTORE.save(y, j); G.years = [...new Set([...G.years, y])].sort(); await loadGuide(y); alert("불러왔습니다.");
+    } catch(err) { alert("지침 파일 형식을 확인해 주세요."); } }); };
+}
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const who = () => window.CURRENT_USER || (SHARED ? "" : "PC");
+
+// 편집 화면: 화면의 입력값을 G.draft로 모은 뒤 저장
+function guideCollect(){
+  const d = G.draft, q = s => document.querySelector(s);
+  d.title = q("#gfTitle").value; d.issued = q("#gfIssued").value; d.intro = q("#gfIntro").value;
+  d.sections.forEach((s, si) => {
+    s.title = q(`[data-s="${si}"][data-f="title"]`).value;
+    s.note = q(`[data-s="${si}"][data-f="note"]`).value;
+    s.text = q(`[data-s="${si}"][data-f="text"]`).value;
+    s.cols = q(`[data-s="${si}"][data-f="cols"]`).value.split(",").map(x => x.trim()).filter(Boolean);
+    s.rows = (s.rows || []).map((r, ri) => s.cols.map((_, ci) => { const t = q(`[data-s="${si}"][data-r="${ri}"][data-c="${ci}"]`); return t ? t.value : (r[ci] || ""); }));
+  });
+}
+function drawGuideEdit(){
+  const d = G.draft, el = $("tab-guide");
+  el.innerHTML = `<div class="g-edit">
+    <div class="g-top"><p class="g-title">${G.year}년 지침 편집</p>
+      <div class="row" style="margin:0"><button class="btn" id="gCancel">취소</button><button class="btn pri" id="gSave">저장</button></div></div>
+    <div class="card">
+      <label class="muted" style="font-size:12px">제목</label><input type="text" id="gfTitle" value="${esc(d.title || "")}">
+      <label class="muted" style="font-size:12px;display:block;margin-top:8px">시행일</label><input type="text" id="gfIssued" value="${esc(d.issued || "")}" placeholder="예: 2027.10">
+      <label class="muted" style="font-size:12px;display:block;margin-top:8px">머리말(원칙 등)</label><textarea id="gfIntro" rows="5">${esc(d.intro || "")}</textarea>
+    </div>
+    ${d.sections.map((s, si) => `<div class="g-sec">
+      <div class="row" style="justify-content:space-between"><b>${si + 1}번째 장</b>
+        <span><button class="btn sm" data-act="up" data-s="${si}">위로</button> <button class="btn sm" data-act="down" data-s="${si}">아래로</button> <button class="btn sm red" data-act="delsec" data-s="${si}">장 삭제</button></span></div>
+      <label>장 제목</label><input type="text" data-s="${si}" data-f="title" value="${esc(s.title || "")}">
+      <label>표 위 안내(한도 요약 등)</label><textarea data-s="${si}" data-f="note" rows="2">${esc(s.note || "")}</textarea>
+      <label>표 머리글 (쉼표로 구분, 예: 분류, 구분, 지원, 미지원 — 첫 칸이 '분류'면 같은 분류끼리 칸을 합쳐 보여 줌)</label><input type="text" data-s="${si}" data-f="cols" value="${esc((s.cols || []).join(", "))}">
+      <div class="scroll" style="max-height:none;margin-top:8px"><table class="tbl"><tr>${(s.cols || []).map(c => `<th>${esc(c)}</th>`).join("")}<th></th></tr>
+        ${(s.rows || []).map((r, ri) => `<tr>${(s.cols || []).map((_, ci) => `<td><textarea data-s="${si}" data-r="${ri}" data-c="${ci}" rows="${Math.min(10, Math.max(2, String(r[ci] || "").split("\n").length + 1))}">${esc(r[ci] || "")}</textarea></td>`).join("")}
+          <td class="nw"><button class="btn sm" data-act="rowup" data-s="${si}" data-r="${ri}">↑</button> <button class="btn sm red" data-act="delrow" data-s="${si}" data-r="${ri}">삭제</button></td></tr>`).join("")}
+      </table></div>
+      <div class="row"><button class="btn sm" data-act="addrow" data-s="${si}">+ 행 추가</button></div>
+      <label>표 아래 설명</label><textarea data-s="${si}" data-f="text" rows="2">${esc(s.text || "")}</textarea>
+    </div>`).join("")}
+    <div class="row" style="margin-top:14px"><button class="btn" data-act="addsec">+ 장 추가</button></div></div>`;
+  $("gCancel").onclick = () => { if (confirm("편집한 내용을 저장하지 않고 닫을까요?")) { G.editing = false; drawGuide(); } };
+  $("gSave").onclick = async () => {
+    guideCollect();
+    const memo = prompt("무엇을 바꿨는지 간단히 적어 주세요 (변경 이력에 남습니다).", "");
+    if (memo === null) return;
+    (G.draft.history = G.draft.history || []).push({ at: today(), by: who(), memo: memo || "수정" });
+    G.draft.year = G.year;
+    try { await GSTORE.save(G.year, G.draft); } catch(e) { alert("저장하지 못했습니다: " + (e.message || e)); return; }
+    G.data = G.draft; G.fromDefault = false; G.editing = false; drawGuide(); alert("저장했습니다.");
+  };
+  el.querySelectorAll("[data-act]").forEach(b => b.onclick = () => {
+    guideCollect();
+    const si = +b.dataset.s, ri = +b.dataset.r, secs = G.draft.sections, act = b.dataset.act;
+    if (act === "addrow") secs[si].rows.push(secs[si].cols.map(() => ""));
+    if (act === "delrow" && confirm("이 행을 삭제할까요?")) secs[si].rows.splice(ri, 1);
+    if (act === "rowup" && ri > 0) secs[si].rows.splice(ri - 1, 0, secs[si].rows.splice(ri, 1)[0]);
+    if (act === "up" && si > 0) secs.splice(si - 1, 0, secs.splice(si, 1)[0]);
+    if (act === "down" && si < secs.length - 1) secs.splice(si + 1, 0, secs.splice(si, 1)[0]);
+    if (act === "delsec" && confirm(`'${secs[si].title || si + 1 + "번째 장"}'을 삭제할까요?`)) secs.splice(si, 1);
+    if (act === "addsec") secs.push({ title: "새 장", note: "", cols: ["구분", "지원", "미지원"], rows: [["", "", ""]], text: "" });
+    const y = window.scrollY; drawGuideEdit(); window.scrollTo(0, y);
+  });
+}
+
+renderDash(); renderReview(); renderOwner(); renderMonth(); renderList(); renderExec(); renderGuide();
+uiRestore();
+// 주소의 #탭 → 마지막으로 보던 탭 순서로 시작. 첫 화면도 방문 기록에 넣어 두어야 뒤로 가기로 돌아올 수 있음
+const startTab = location.hash.slice(1) || store.get("budget2027.tab", "dash");
+showTab(startTab, false);
+history.replaceState({ tab: curTab }, "", "#" + curTab);
 </script>
 <script src="firebase-config.js?v=1"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -462,6 +685,19 @@ function start(data, exec) {
     data: exec || {},
     set: function (k, v) { return db.ref(BASE + "/exec/" + k).set(v).catch(function (e) { alert("저장하지 못했습니다: " + e.message); }); },
     replace: function (o) { return db.ref(BASE + "/exec").set(o).catch(function (e) { alert("저장하지 못했습니다: " + e.message); }); }
+  };
+  window.CURRENT_USER = me.email;
+  // 예산 지침: budget/years/<연도>/guide (규칙: 허용 계정 읽기, 마스터만 쓰기)
+  window.GUIDE_STORE = {
+    canEdit: isMaster,
+    years: function () {
+      var y0 = +YEAR, cand = [y0 - 1, y0, y0 + 1, y0 + 2, y0 + 3];
+      return Promise.all(cand.map(function (y) {
+        return db.ref("budget/years/" + y + "/guide/year").once("value").then(function (s) { return s.exists() ? String(y) : null; }).catch(function () { return null; });
+      })).then(function (r) { return r.filter(Boolean); });
+    },
+    load: function (y) { return db.ref("budget/years/" + y + "/guide").once("value").then(function (s) { return s.val(); }); },
+    save: function (y, g) { return db.ref("budget/years/" + y + "/guide").set(g); }
   };
   screen("appScreen");
   var s = document.createElement("script");
