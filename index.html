@@ -18,17 +18,17 @@
 :root{
   --bg:#f6f7f9; --card:#fff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --soft:#f3f4f6;
   --accent:#ea580c; --accent-soft:#ffedd5;
-  --it:#2563eb; --ops:#0d9488; --hr:#9333ea;
+  --it:#2563eb; --ops:#0d9488; --hr:#9333ea; --mg:#d97706;
   --bad:#dc2626; --bad-soft:#fee2e2; --warn:#b45309; --warn-soft:#fef3c7; --info:#475569; --info-soft:#e2e8f0;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#111418; --card:#1a1f25; --ink:#e5e7eb; --muted:#9ca3af; --line:#2d333b; --soft:#222830;
-  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc;
+  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc; --mg:#fbbf24;
   --bad:#f87171; --bad-soft:#3a1d1d; --warn:#fbbf24; --warn-soft:#3a2e12; --info:#cbd5e1; --info-soft:#2a3240;
 }}
 :root[data-theme="dark"]{
   --bg:#111418; --card:#1a1f25; --ink:#e5e7eb; --muted:#9ca3af; --line:#2d333b; --soft:#222830;
-  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc;
+  --accent:#fb923c; --accent-soft:#3b2414; --it:#60a5fa; --ops:#2dd4bf; --hr:#c084fc; --mg:#fbbf24;
   --bad:#f87171; --bad-soft:#3a1d1d; --warn:#fbbf24; --warn-soft:#3a2e12; --info:#cbd5e1; --info-soft:#2a3240;
 }
 *{box-sizing:border-box}
@@ -255,8 +255,9 @@ const DATA = window.BUDGET_DATA || null;
 // 웹 버전은 window.EXEC_STORE = { data, set(key, value), replace(obj) } 로 집행액을 Firebase에 저장한다
 const SHARED = !!window.EXEC_STORE;
 const ITEMS = DATA.items, FINDS = DATA.findings;
-const TEAMS = ["IT솔루션팀","운영관리팀","인사팀"];
-const TCOL = {"IT솔루션팀":"var(--it)","운영관리팀":"var(--ops)","인사팀":"var(--hr)"};
+const TEAMS = DATA.teams || ["IT솔루션팀","운영관리팀","인사팀"];
+const TCOL = {"경영관리실":"var(--mg)","IT솔루션팀":"var(--it)","운영관리팀":"var(--ops)","인사팀":"var(--hr)"};
+document.querySelector("header .sub").textContent = "2027년 예산사용 지침(2026.10) 기준 검토 · " + TEAMS.join(" / ");
 const PERS = ["직원급여","국민연금","건강보험","고용보험","산재보험","퇴직급여"];
 const isPers = o => PERS.some(k => o.acct.includes(k));
 const W = n => Math.round(n).toLocaleString("ko-KR");
@@ -380,8 +381,9 @@ function renderDash(){
   </table></div>
   <h2>월별 운영 예산 (인건비 제외)</h2>
   <div class="card">${chart(o=>!isPers(o))}</div>
-  <h2>먼저 처리할 수정필요 사항</h2>
-  ${FINDS.filter(f=>f.level==="수정필요").map(findHTML).join("")}`;
+  ${lv("수정필요")
+    ? `<h2>먼저 처리할 수정필요 사항</h2>${FINDS.filter(f=>f.level==="수정필요").map(findHTML).join("")}`
+    : `<h2>확인이 필요한 사항</h2><p class="muted" style="margin:-4px 0 10px;font-size:12.5px">수정필요로 지적된 사항은 없습니다.</p>${FINDS.filter(f=>f.level==="확인필요").map(findHTML).join("")}`}`;
 }
 
 function findHTML(f){
@@ -760,14 +762,55 @@ function start(data, exec) {
   document.body.appendChild(s);
 }
 
+// 집행액은 "항목번호-월" 키로 저장되므로, 엑셀 행 순서가 바뀐 새 자료를 올릴 때
+// 같은 항목(팀+내용, 없으면 팀+과목+금액)을 찾아 새 번호로 옮긴다. 옮기기 전 집행액은 exec_backup에 보관.
+function remapExec(oldItems, newItems, exec) {
+  // 1) 팀+내용  2) 팀+과목+금액  3) 팀+과목+내용 앞 16자(여러 행이 한 행으로 합쳐진 경우) 순서로 찾는다
+  var norm = function (s) { return String(s || "").replace(/\s+/g, "").toLowerCase(); };
+  var byDesc = {}, byAcct = {}, byHead = {};
+  var add = function (m, k, id) { (m[k] = m[k] || []).push(id); };
+  newItems.forEach(function (o) {
+    add(byDesc, o.team + "|" + norm(o.desc), o.id);
+    add(byAcct, o.team + "|" + norm(o.acct) + "|" + o.total, o.id);
+    add(byHead, o.team + "|" + norm(o.acct) + "|" + norm(o.desc).slice(0, 16), o.id);
+  });
+  var map = {}, used = {};
+  var free = function (l) { return (l || []).filter(function (i) { return !used[i]; }); };
+  oldItems.forEach(function (o) {
+    var c = free(byDesc[o.team + "|" + norm(o.desc)]);
+    if (!c.length) c = free(byAcct[o.team + "|" + norm(o.acct) + "|" + o.total]);
+    if (c.length) { map[o.id] = c[0]; used[c[0]] = true; }
+  });
+  oldItems.forEach(function (o) {
+    if (map[o.id] !== undefined) return;
+    var h = byHead[o.team + "|" + norm(o.acct) + "|" + norm(o.desc).slice(0, 16)];
+    if (h && h.length === 1) map[o.id] = h[0];   // 합쳐진 행: 여러 옛 행이 한 새 행으로
+  });
+  var out = {}, moved = 0, lost = 0;
+  Object.keys(exec || {}).forEach(function (k) {
+    var p = k.split("-"), nid = map[p[0]];
+    if (nid !== undefined) { out[nid + "-" + p[1]] = (out[nid + "-" + p[1]] || 0) + exec[k]; moved++; } else lost++;
+  });
+  return { exec: out, moved: moved, lost: lost };
+}
+
 function uploadData(input) {
   var f = input.files[0]; if (!f) return;
   f.text().then(function (t) {
     var j = JSON.parse(t);
     if (!j.items || !j.findings) throw new Error("budget.json 형식이 아닙니다.");
-    if (!confirm("항목 " + j.items.length + "개 자료를 서버에 올립니다. 이전 자료는 바뀝니다(집행액은 유지). 계속할까요?")) return;
-    j.uploadedAt = new Date().toISOString(); j.uploadedBy = me.email;
-    return db.ref(BASE + "/data").set(j).then(function () { alert("올렸습니다."); location.reload(); });
+    return Promise.all([db.ref(BASE + "/data/items").once("value"), db.ref(BASE + "/exec").once("value")]).then(function (r) {
+      var oldItems = r[0].val() || [], exec = r[1].val() || {}, n = Object.keys(exec).length;
+      var rm = n ? remapExec(oldItems, j.items, exec) : null;
+      var msg = "항목 " + j.items.length + "개 자료를 서버에 올립니다. 이전 자료는 바뀝니다.";
+      if (rm) msg += "\n\n입력된 집행액 " + n + "건 중 " + rm.moved + "건을 새 자료의 같은 항목으로 옮깁니다." +
+                     (rm.lost ? "\n" + rm.lost + "건은 맞는 항목이 없어 옮기지 못합니다(서버 백업에는 남음)." : "");
+      if (!confirm(msg + "\n\n계속할까요?")) return;
+      j.uploadedAt = new Date().toISOString(); j.uploadedBy = me.email;
+      var up = { data: j };
+      if (rm) { up.exec = rm.exec; up["exec_backup/" + Date.now()] = exec; }
+      return db.ref(BASE).update(up).then(function () { alert("올렸습니다."); location.reload(); });
+    });
   }).catch(function (e) { alert("올리지 못했습니다: " + e.message); });
   input.value = "";
 }
